@@ -197,6 +197,33 @@ QString DataBase::searchTable(const QString &tableName, const QString &columnNam
     return "";
 }
 
+
+QVariantList DataBase::getAllRowsAsVariantList(const QString& tableName)
+{
+    QVariantList resultList;
+
+    QString sql = QString("SELECT * FROM %1;").arg(tableName);
+
+    QSqlQuery query(*m_db);
+    if (!query.exec(sql))
+    {
+        qWarning() << "Failed to get all rows:" << query.lastError().text();
+    }
+
+    while (query.next())
+    {
+        QVariantMap rowMap;
+        QSqlRecord record = query.record();
+        for (int i = 0; i < record.count(); ++i)
+        {
+            rowMap.insert(record.fieldName(i), query.value(i));
+        }
+        resultList.append(rowMap);
+    }
+
+    return resultList;
+}
+
 int DataBase::countRows(const QString& tableName)
 {
     if (!m_db || !m_db->isOpen()) {

@@ -46,6 +46,8 @@ public:
                                                const QVariant& searchValue);
     QString searchTable(const QString& tableName,const QString& columnName, const QString& searchValue,
                         const QString& columnYouWant);
+    QVariantList getAllRowsAsVariantList(const QString& tableName);
+
     int countRows(const QString& tableName);
 
 signals:
