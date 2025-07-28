@@ -9,6 +9,7 @@ Page
     anchors.fill: parent
     property string formType: "none"
 
+
     onFormTypeChanged:
     {
         if(formType=="word")
@@ -32,80 +33,98 @@ Page
             fifthInput.visible=false;
             sixthInput.visible=false;
             sixthInput.enabled=false;
+            rec5.visible=false;
+            rec6.visible=false;
+        }
+        else if(formType=="single")
+        {
+           forthInput.visible=false;
+            fifthInput.visible=false;
+            sixthInput.visible=false;
+            rec4.visible=false;
+            rec5.visible=false;
+            rec6.visible=false;
         }
     }
+    Rectangle
+    {
+        color:"#222424"
+        anchors.fill: parent
+
 
     Item
         {
             id:baseNewWordFrom
-            width:400;
-            height:200;
-            anchors.centerIn: parent
-            // color:"purple"
+            anchors.fill: parent
             Column
             {
                 anchors.fill: parent
-                Rectangle { width:100; height:50; color:"black"; TextInput { id:firstInput; anchors.fill: parent;}}
-                Rectangle { width:100; height:50; color:"red"; TextInput { id:secondInput; anchors.fill: parent;}}
-                Rectangle { width:100; height:50; color:"grey"; TextInput { id:thirdInput; anchors.fill: parent;}}
-                Rectangle { width:100; height:50; color:"green"; TextInput { id:forthInput; anchors.fill: parent;}}
-                Rectangle { width:100; height:50; color:"black"; TextInput { id:fifthInput; anchors.fill: parent;}}
-                Rectangle { width:100; height:50; color:"red"; TextInput { id:sixthInput; anchors.fill: parent;}}
-            }
-        }
-    Button
-    {
-        text:"save"
-        anchors.top: baseNewWordFrom.bottom
-        onClicked:
-        {
-            console.log("values are:"+
-                        firstInput.text,
-                        secondInput.text,
-                        thirdInput.text,
-                        forthInput.text,
-                        fifthInput.text,
-                        sixthInput.text)
-            var data
-            if(formType=="word")
-            {
-                //text, meaning, example, translate, source, status
-                data = [
-                                firstInput.text,
-                                secondInput.text,
-                                thirdInput.text,
-                                forthInput.text,
-                                fifthInput.text,
-                                sixthInput.text
-                            ];
-                for(var i=0; i<data.length; i++) {
-                    console.log(typeof data[i], data[i]);
+                spacing: 15
+                Rectangle { id:rec1; width:100; height:50; color:"transparent";  border.color: "grey";TextInput { id:firstInput; anchors.fill: parent; color:"white"}}
+                Rectangle { id:rec2;width:100; height:50; color:"transparent"; border.color: "grey"; TextInput { id:secondInput; anchors.fill: parent; color:"white"}}
+                Rectangle { id:rec3;width:100; height:50; color:"transparent";  border.color: "grey";TextInput { id:thirdInput; anchors.fill: parent; color:"white"}}
+                Rectangle { id:rec4;width:100; height:50; color:"transparent"; border.color: "grey"; TextInput { id:forthInput; anchors.fill: parent; color:"white"}}
+                Rectangle { id:rec5;width:100; height:50; color:"transparent";  border.color: "grey";TextInput { id:fifthInput; anchors.fill: parent; color:"white"}}
+                Rectangle { id:rec6;width:100; height:50; color:"transparent"; border.color: "grey"; TextInput { id:sixthInput; anchors.fill: parent; color:"white"}}
+                Button
+                {
+                    text:"save"
+                    onClicked:
+                    {
+                        var data
+                        if(formType=="word")
+                        {
+                            //text, meaning, example, translate, source, status
+                            data = [
+                                            firstInput.text,
+                                            secondInput.text,
+                                            thirdInput.text,
+                                            forthInput.text,
+                                            fifthInput.text,
+                                            sixthInput.text
+                                        ];
+
+                            backend.addWordToTable(data);
+                        }
+                        else if(formType=="verb")
+                        {
+                            //verb, past, past perfect, status
+                            data = [
+                                            firstInput.text,
+                                            secondInput.text,
+                                            thirdInput.text,
+                                            forthInput.text
+                                        ];
+
+                            backend.addWordToTable(data);
+                        }
+                        else if(formType=="single")
+                        {
+                            //data order passed by QML for single: text, translate,status
+                            data = [
+                                            firstInput.text,
+                                            secondInput.text,
+                                            thirdInput.text,
+                                        ];
+                            backend.addWordToTable(data);
+                        }
+                        else
+                        {
+                            console.log("formtype undefined..");
+                        }
+
+
+                    }
                 }
-                backend.addWordToTable(data);
-            }
-            else if(formType=="verb")
-            {
-                //verb, past, past perfect, status
-                data = [
-                                firstInput.text,
-                                secondInput.text,
-                                thirdInput.text,
-                                forthInput.text
-                            ];
-                for(var i=0; i<data.length; i++) {
-                    console.log(typeof data[i], data[i]);
-                }
-                backend.addWordToTable(data);
-            }
-            else
-            {
-                console.log("formtype undefined..");
+
             }
 
 
+
+
         }
+
     }
-
     Connections
     {
         target: backend
@@ -115,12 +134,19 @@ Page
         }
         function onAddItemtoTableResult(res)
         {
-            console.log("result submit/add item to the table: "+res)
+            // console.log("result submit/add item to the table: "+res)
+            if (res !== "error")
+            {
+                mainStackView.pop();
+                mainStackView.pop();
+            }
+
+
         }
     }
     Component.onCompleted:
     {
-        console.log("add new word page component loaded")
+        // console.log("add new word page component loaded")
         backend.whatIsCurrentTableType();
     }
 

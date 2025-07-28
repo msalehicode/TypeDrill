@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Material
 import QtQuick.Layouts
+import QtQuick.Controls.Material
 
 Page
 {
@@ -9,40 +9,34 @@ Page
     anchors.fill: parent
     Rectangle
     {
-        width:400;
-        height:200;
-        anchors.centerIn: parent
-        color:"blue"
+        anchors.fill: parent
+        color:"#222424"
         Column
         {
             Rectangle
             {
                 width:100;
                 height:50;
-                color:"grey"
+                color:"transparent"
+                border.color: "grey"
                 TextInput
                 {
                     anchors.fill: parent
                     id:tableName
                     width:100;
+                    color:"white"
                     height:50
                 }
             }
-            Rectangle
-            {
-                width:100;
-                height:50;
-                color:"pink"
-                anchors.top:tableName.bottom
-                TextInput
-                {
-                    id:tableType
-                    anchors.fill: parent
-                    width:100;
-                    height:50
+            ComboBox {
+                id:comboType
+                model: ListModel {
+                    id: model
+                    ListElement { text: "word"}
+                    ListElement { text: "verb"}
+                    ListElement { text: "single"}
                 }
             }
-
 
 
             Button
@@ -51,7 +45,8 @@ Page
                 anchors.top: tableType.bottom
                 onClicked:
                 {
-                    backend.createTable(tableName.text,tableType.text)
+                    var selectedItem = comboType.model.get(comboType.currentIndex);
+                    backend.createTable(tableName.text,selectedItem.text)
                 }
             }
         }
@@ -66,10 +61,15 @@ Page
         {
             for(let i=0; i<tables.count; i++)
                 console.log("received table list:"+tables[i])
+            //write code here to notice input to avoid duplicated table name
         }
         function onTableCreationResult(result)
         {
-            console.log("table creation result="+result)
+            // console.log("table creation result="+result)
+            if (result !== "error")
+            {
+                mainStackView.pop();
+            }
         }
     }
 }

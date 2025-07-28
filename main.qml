@@ -1,12 +1,11 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
 Window
 {
     id:root
-    width: 800
-    height: 800
+    width: 900
+    height: 900
     visible: true
     title: qsTr("TypeDrill")
     color:"#222424"
@@ -30,9 +29,11 @@ Window
         id:mainStackView;
         initialItem: "./HomePage.qml";
         anchors.fill:parent;
+        onPopExitChanged:
+        {
+            currentPageIndex=1;
+        }
     }
-    AppToolbar
-    {
 
-    }
+
 }

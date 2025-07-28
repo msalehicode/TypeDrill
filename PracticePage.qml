@@ -6,64 +6,78 @@ import QtQuick.Controls.Material
 Page
 {
     anchors.fill: parent
-    Item
+
+    Rectangle
     {
-        id:itemContent
+        color:"#222424"
         anchors.fill: parent
-
-        ColumnLayout
+        Item
         {
-            id:columnPractice
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            spacing:50
-            Label
-            {
-                id:w_text
-                text:"w_text"
-                font.pixelSize: 45
-                horizontalAlignment: Text.AlignHCenter  // Center text horizontally
-                Layout.fillWidth: true                   // Fill the available width
-                wrapMode: Text.WordWrap                  // Enable text wrapping if text is long
+            id:itemContent
+            anchors.fill: parent
 
-            }
-            Label
+            ColumnLayout
             {
-                id:w_meaning
-                text:"w_meaning"
-                font.pixelSize: 25
-                horizontalAlignment: Text.AlignHCenter  // Center text horizontally
-                Layout.fillWidth: true                   // Fill the available width
-                wrapMode: Text.WordWrap                  // Enable text wrapping if text is long
-            }
-            Label
-            {
-                id:w_example
-                text:"w_example"
-                font.pixelSize: 25
-                horizontalAlignment: Text.AlignHCenter  // Center text horizontally
-                Layout.fillWidth: true                   // Fill the available width
-                wrapMode: Text.WordWrap                  // Enable text wrapping if text is long
-            }
-            Rectangle
-            {
-                width: 200;
-                height: 50
-                Layout.alignment: Qt.AlignHCenter   // Align horizontally center in layout
-                TextInput
+                id:columnPractice
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                spacing:50
+                Label
                 {
-                    id:text_input
-                    text:"type"
-                    font.pixelSize: 30
-                    anchors.fill: parent
-                    focus: true;
-                    onAccepted:
+                    id:w_text
+                    text:"w_text"
+                    font.pixelSize: 45
+                    color:"white"
+                    horizontalAlignment: Text.AlignHCenter  // Center text horizontally
+                    Layout.fillWidth: true                   // Fill the available width
+                    wrapMode: Text.WordWrap                  // Enable text wrapping if text is long
+
+                }
+                Label
+                {
+                    id:w_meaning
+                    text:"w_meaning"
+                    font.pixelSize: 25
+                    color:"white"
+                    horizontalAlignment: Text.AlignHCenter  // Center text horizontally
+                    Layout.fillWidth: true                   // Fill the available width
+                    wrapMode: Text.WordWrap                  // Enable text wrapping if text is long
+                }
+                Label
+                {
+                    id:w_example
+                    text:"w_example"
+                    font.pixelSize: 25
+                    color:"white"
+                    horizontalAlignment: Text.AlignHCenter  // Center text horizontally
+                    Layout.fillWidth: true                   // Fill the available width
+                    wrapMode: Text.WordWrap                  // Enable text wrapping if text is long
+                }
+                Rectangle
+                {
+                    width: 200;
+                    height: 50
+                    Layout.alignment: Qt.AlignHCenter   // Align horizontally center in layout
+                    color:"transparent"
+                    border.color: "grey";
+                    TextInput
                     {
-                        backend.getNextWord(text_input.text)
+                        id:text_input
+                        text:"type"
+
+                        color:"white"
+                        font.pixelSize: 30
+                        anchors.fill: parent
+                        focus: true;
+                        onAccepted:
+                        {
+                            backend.getNextWord(text_input.text)
+                        }
                     }
                 }
             }
         }
+
     }
 
     Connections

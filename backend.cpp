@@ -15,13 +15,19 @@ void Backend::wordIs()
         last_word << m_db.searchTable(currentTableName, "v_id", QString::number(last_id), "v_past");
         last_word << m_db.searchTable(currentTableName, "v_id", QString::number(last_id), "v_past_perfect");
     }
+    else if(currentTableName[0]=='s')
+    {
+        last_word << m_db.searchTable(currentTableName, "s_id", QString::number(last_id), "s_text");
+        last_word << m_db.searchTable(currentTableName, "s_id", QString::number(last_id), "s_translate");
+        last_word << m_db.searchTable(currentTableName, "s_id", QString::number(last_id), "s_status");
+    }
     else
     {
         //just to fill last word with somethinge
-        last_word << "error, could not detect current table type.";
+        last_word << "error";//, could not detect current table type.
     }
 
-    qInfo() <<"wordisresult:"<< last_word;
+    // qInfo() <<"wordisresult:"<< last_word;
 }
 
 Backend::Backend(QObject *parent)
@@ -54,17 +60,17 @@ void Backend::getNextWord(const QString &userText)
 
     last_id++;
 
-    qInfo() <<"debuggg"<< last_word << "" << last_word[0];
+    // qInfo() <<"debuggg"<< last_word << "" << last_word[0];
     if (last_word.size() > 0 && userText == last_word[0])
     {
         wordIs();
-        qInfo() << "usertext= " << userText;
-        qInfo() << "last_wrod=" << last_word;
-        qInfo() << "last id =" << last_id << "maxid="<<max_id<< "minud="<<min_id;
+        // qInfo() << "usertext= " << userText;
+        // qInfo() << "last_wrod=" << last_word;
+        // qInfo() << "last id =" << last_id << "maxid="<<max_id<< "minud="<<min_id;
         emit wordReady(last_word);
     }
     else
-        qInfo() << "incorrect value entered.";
+        qInfo() << "error"; //incorrect value entered.
 }
 
 void Backend::getTables()
@@ -100,10 +106,10 @@ void Backend::createTable(const QString &tableName, const QString &tableType)
                 if(qresult)
                     result+= " and added to user_tables.";
                 else
-                    result+= " but could not add to user_tables this will occure problem.";
+                    result= "error";//error: could not add to user_tables this will occure problem.
             }
             else
-                result="error: table word failed to create.";
+                result="error"; //: table word failed to create.
     }
     else if(tableType=="verb")
     {
@@ -125,14 +131,38 @@ void Backend::createTable(const QString &tableName, const QString &tableType)
             if(qresult)
                 result+= " and added to user_tables.";
             else
-                result+= " but could not add to user_tables this will occure problem.";
+                result= "error";// but could not add to user_tables this will occure problem.
         }
         else
-            result="error: table verb failed to create.";
+            result="error";//: table verb failed to create.
+    }
+    else if(tableType=="single")
+    {
+        bool qresult = m_db.createTable("s_"+tableName, "s_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+                                        s_text TEXT,\
+                                        s_translate TEXT,\
+                                        s_status TEXT"
+                                        );
+        if(qresult)
+        {
+            result="single table successfully created.";
+
+            QMap<QString, QVariant> rowData;
+            rowData["t_title"] = "s_"+tableName;
+            rowData["t_status"] = "0";
+
+            qresult = m_db.insertIntoTable("user_tables", rowData);
+            if(qresult)
+                result+= " and added to user_tables.";
+            else
+                result= "error";// but could not add to user_tables this will occure problem.
+        }
+        else
+            result="error";//: table single failed to create.
     }
     else
     {
-        result="error: undefined table type.";
+        result="error";//: undefined table type.
     }
 
     emit tableCreationResult(result);
@@ -144,11 +174,11 @@ void Backend::switchTable(const QString &tableName,const QString& tableId)
     currentTableName=tableName;
     currentTableId=tableId;
 
-    qInfo()<< "table switched to user_table :" << currentTableName << " id:" << currentTableId;
+    // qInfo()<< "table switched to user_table :" << currentTableName << " id:" << currentTableId;
 
     max_id=m_db.countRows(currentTableName);
 
-    qInfo() << "maxid=" << max_id << "\tminid=" << min_id;
+    // qInfo() << "maxid=" << max_id << "\tminid=" << min_id;
 }
 
 void Backend::whatIsCurrentTableType()
@@ -158,16 +188,16 @@ void Backend::whatIsCurrentTableType()
         result="word";
     else if(currentTableName[0]=='v')
         result="verb";
+    else if(currentTableName[0]=='s')
+        result="single";
     else
-        result="?";
-    qInfo() << "current table type is :" << result;
+        result="error";
+    // qInfo() << "current table type is :" << result;
     emit tableTypeIs(result);
 }
 
 void Backend::addWordToTable(const QStringList &data)
 {
-    qInfo()<< "adword to tbael";
-
     QString result;
     bool qresult;
     if(currentTableName[0]=='w' && data.size() >=6)
@@ -185,7 +215,7 @@ void Backend::addWordToTable(const QStringList &data)
         if(qresult)
             result= "word added to the table.";
         else
-            result= "failed to add word into the table.";
+            result= "error";//:failed to add word into the table.
     }
     else if(currentTableName[0]=='v' && data.size() >=4)
     {
@@ -199,12 +229,25 @@ void Backend::addWordToTable(const QStringList &data)
         if(qresult)
             result= "verb added to the table.";
         else
-            result= "failed to add verb into the table.";
+            result= "error";//failed to add verb into the table.
+    }
+    else if(currentTableName[0]=='s' && data.size() >=3)
+    {
+        //data order passed by QML for single: text, translate,status
+        QMap<QString, QVariant> rowData;
+        rowData["s_text"] = data[0];
+        rowData["s_translate"] = data[1];
+        rowData["s_status"] = data[2];
+        qresult = m_db.insertIntoTable(currentTableName, rowData);
+        if(qresult)
+            result= "single added to the table.";
+        else
+            result= "error";//failed to add single into the table.
     }
     else
     {
-        qInfo() << "undefined table type or invalid parameters.";
-        result="error, underined table type or invalid parameters";
+        // qInfo() << "undefined table type or invalid parameters.";
+        result="error";//, underined table type or invalid parameters
     }
 
     emit addItemtoTableResult(result);
@@ -216,6 +259,6 @@ void Backend::resetPractice()
     last_word.clear();
     //to avoid empty QStringList.
     last_word << "";
-    qInfo() << "practice reseted.";
+    // qInfo() << "practice reseted.";
 }
 

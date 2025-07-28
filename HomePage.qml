@@ -8,7 +8,7 @@ Page
     Rectangle
     {
         anchors.fill: parent;
-        color:"black"
+        color:"#222424"
         Row
         {
             anchors.horizontalCenter: parent.horizontalCenter

@@ -42,9 +42,12 @@ public:
     bool insertIntoTable(const QString& tableName, const QMap<QString, QVariant>& data);
     bool updateTableValue(const QString& tableName, const QString& keyColumn, const QVariant& keyValue,
                           const QString& updateColumn, const QVariant& updateValue);
-    QList<QMap<QString, QVariant>> searchTable(const QString& tableName, const QString& columnName,
+    QList<QMap<QString, QVariant>> searchTable(const QString& tableName,
+                                               const QString& columnName,
                                                const QVariant& searchValue);
-    QString searchTable(const QString& tableName,const QString& columnName, const QString& searchValue,
+    QString searchTable(const QString& tableName,
+                        const QString& columnName,
+                        const QString& searchValue,
                         const QString& columnYouWant);
     QVariantList getAllRowsAsVariantList(const QString& tableName);
 
